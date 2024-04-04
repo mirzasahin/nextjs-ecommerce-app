@@ -24,7 +24,7 @@ const ProductCard = ({ product }: { product: any }) => {
         <div>{textClip(product.name)}</div>
         <Rating name="read-only" value={productRating} readOnly />
         <div className="text-orange-600 font-bold text-lg md:text-xl">
-          {product.price}₺
+          ${product.price}
         </div>
       </div>
     </div>

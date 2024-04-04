@@ -6,6 +6,8 @@ import Counter from "../general/Counter";
 import { useState } from "react";
 import { Rating } from "@mui/material";
 import Button from "../general/Button";
+import Comment from "./Comment";
+import Heading from "../general/Heading";
 
 export type CardProductProps = {
   id: string;
@@ -39,25 +41,25 @@ const DetailClient = ({ product }: { product: any }) => {
   };
 
   let productRating =
-  product?.reviews?.reduce((acc: number, item: any) => acc + item.rating, 0) /
-  product?.reviews?.length;
+    product?.reviews?.reduce((acc: number, item: any) => acc + item.rating, 0) /
+    product?.reviews?.length;
 
   return (
     <div className="my-10">
       <PageContainer>
         <div className="block md:flex gap-10 justify-center">
-          <div className="relative h-[400px] w-[400px]">
+          <div className="relative h-[200px] md:h-[400px] w-[200px] md:w-[400px] mb-3 md:mb-0">
             <Image src={product?.image} fill alt="" />
           </div>
 
-          <div className="w-1/2 space-y-3">
-            <div className="text xl md:text-2xl">{product?.name}</div>
+          <div className="w-full md:w-1/2 space-y-3">
+            <div className="text-xl md:text-2xl">{product?.name}</div>
             <Rating name="read-only" value={productRating} readOnly />
 
             <div className="text-slate-500">{product?.description}</div>
 
             <div>
-              <div>STOK DURUM:</div>
+              <div>STOK DURUMU:</div>
               {product.inStock ? (
                 <div className="text-green-500">Ürün Stokta Mevcut</div>
               ) : (
@@ -69,9 +71,17 @@ const DetailClient = ({ product }: { product: any }) => {
               decreaseFunc={decreaseFunc}
               cardProduct={cardProduct}
             />
-            <div className="text-lg md:text-2xl text-orange-600 font-bold">{product.price}₺</div>
-            <Button text="Sepete Ekle" small onClick={() => {}}/>
+            <div className="text-lg md:text-2xl text-orange-600 font-bold">
+              ${product.price}
+            </div>
+            <Button text="Add to Cart" small onClick={() => {}} />
           </div>
+        </div>
+        <Heading text="Comments"/>
+        <div>
+          {product?.reviews?.map((prd: any) => (
+            <Comment key={prd.id} prd={prd} />
+          ))}
         </div>
       </PageContainer>
     </div>
