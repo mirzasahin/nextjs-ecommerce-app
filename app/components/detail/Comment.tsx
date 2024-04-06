@@ -3,7 +3,6 @@ import React from "react";
 import { RxAvatar } from "react-icons/rx";
 
 const Comment = ({ prd }: { prd: any }) => {
-  console.log(prd);
   return (
     <div className="border w-full md:w-1/2 p-2 rounded-lg my-3">
       {/* <Avatar image={prd?.user?.image} /> */}
