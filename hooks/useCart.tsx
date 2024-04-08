@@ -13,6 +13,8 @@ interface CartContextProps {
   productCartQty: number;
   cartProducts: CardProductProps[] | null;
   addToBasket: (product: CardProductProps) => void;
+  addToBasketIncrease: (product: CardProductProps) => void;
+  addToBasketDecrease: (product: CardProductProps) => void;
   removeFromCart: (product: CardProductProps) => void;
   removeCart: () => void;
 }
@@ -34,6 +36,42 @@ export const CartContextProvider = (props: Props) => {
     let getItemParse: CardProductProps[] = JSON.parse(getItem);
     setCartProducts(getItemParse);
   }, []);
+
+  const addToBasketIncrease = useCallback((product: CardProductProps) => {
+    let updatedCart;
+    if(product.quantity == 10){
+      return toast.error('Maximum product limit reached. You can only add up to 10 items.')
+    }
+    if(cartProducts){
+      updatedCart = [...cartProducts]
+      const existingItem = cartProducts.findIndex(item => item.id === product.id)
+
+      if(existingItem > -1){
+        updatedCart[existingItem].quantity +=1
+      }
+      setCartProducts(updatedCart)
+      localStorage.setItem('cart', JSON.stringify(updatedCart))
+    }
+
+  }, [cartProducts])
+
+  const addToBasketDecrease = useCallback((product: CardProductProps) => {
+    let updatedCart;
+    if(product.quantity == 1){
+      return toast.error('Minimum product limit reached. You must add at least 1 item.')
+    }
+    if(cartProducts){
+      updatedCart = [...cartProducts]
+      const existingItem = cartProducts.findIndex(item => item.id === product.id)
+
+      if(existingItem > -1){
+        updatedCart[existingItem].quantity -=1
+      }
+      setCartProducts(updatedCart)
+      localStorage.setItem('cart', JSON.stringify(updatedCart))
+    }
+
+  }, [cartProducts])
 
   const removeCart = useCallback(() => {
     setCartProducts(null);
@@ -79,6 +117,8 @@ export const CartContextProvider = (props: Props) => {
     cartProducts,
     removeFromCart,
     removeCart,
+    addToBasketIncrease,
+    addToBasketDecrease
   };
 
   return <CartContext.Provider value={value} {...props} />;
