@@ -1,13 +1,20 @@
 "use client";
 import { CardProductProps } from "@/app/components/detail/DetailClient";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 
 interface CartContextProps {
   productCartQty: number;
-  cartProducts: CardProductProps[] | null
-  addToBasket: (product: CardProductProps ) => void
-  removeFromCart: (product: CardProductProps ) => void
+  cartProducts: CardProductProps[] | null;
+  addToBasket: (product: CardProductProps) => void;
+  removeFromCart: (product: CardProductProps) => void;
+  removeCart: () => void;
 }
 
 const CartContext = createContext<CartContextProps | null>(null);
@@ -18,37 +25,60 @@ interface Props {
 
 export const CartContextProvider = (props: Props) => {
   const [productCartQty, setProductsCartQty] = useState(0);
-  const [cartProducts, setCartProducts] = useState<CardProductProps[] | null>(null);
+  const [cartProducts, setCartProducts] = useState<CardProductProps[] | null>(
+    null
+  );
 
   useEffect(() => {
-    let getItem: any = localStorage.getItem('cart')
-    let getItemParse: CardProductProps[] = JSON.parse(getItem)
-    setCartProducts(getItemParse)
-  }, [])
+    let getItem: any = localStorage.getItem("cart");
+    let getItemParse: CardProductProps[] = JSON.parse(getItem);
+    setCartProducts(getItemParse);
+  }, []);
 
-  const addToBasket = useCallback((product: CardProductProps) => {
-    setCartProducts(prev => {
+  const removeCart = useCallback(() => {
+    setCartProducts(null);
+    toast.success("Cart Cleared Successfully!");
+    localStorage.setItem("cart", JSON.stringify(null));
+  }, []);
+
+  const addToBasket = useCallback(
+    (product: CardProductProps) => {
+      setCartProducts((prev) => {
         let updatedCart;
-        if(prev){
-            updatedCart = [...prev, product]
-        }else{
-            updatedCart = [product]
+        if (prev) {
+          updatedCart = [...prev, product];
+        } else {
+          updatedCart = [product];
         }
-        toast.success('Added Product to Cart!')
-        localStorage.setItem('cart', JSON.stringify(updatedCart)) 
-        return updatedCart
-    })
-  }, [cartProducts])
+        toast.success("Added Product to Cart!");
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        return updatedCart;
+      });
+    },
+    [cartProducts]
+  );
 
-  const removeFromCart = useCallback((product: CardProductProps) => {
+  const removeFromCart = useCallback(
+    (product: CardProductProps) => {
+      if (cartProducts) {
+        const filteredProducts = cartProducts.filter(
+          (cart) => cart.id !== product.id
+        );
 
-  }, [])
+        setCartProducts(filteredProducts);
+        toast.success("Deleted Product from Cart!");
+        localStorage.setItem("cart", JSON.stringify(filteredProducts));
+      }
+    },
+    [cartProducts]
+  );
 
   let value = {
     productCartQty,
     addToBasket,
     cartProducts,
-    removeFromCart
+    removeFromCart,
+    removeCart,
   };
 
   return <CartContext.Provider value={value} {...props} />;
